@@ -361,8 +361,16 @@ export default function App() {
       </main>
 
       {/* Footer */}
-      <footer className="max-w-7xl mx-auto px-4 py-12 text-center text-slate-400 text-sm font-medium">
+      <footer className="max-w-7xl mx-auto px-4 py-12 text-center text-slate-400 text-sm font-medium space-y-2">
         <p>© {new Date().getFullYear()} SpendWise • Tu gestor de finanzas personales</p>
+        <div className="flex flex-col items-center space-y-1">
+          <p className="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs font-bold inline-block">
+            Proyecto Escolar • Club de Programación
+          </p>
+          <p className="text-xs opacity-75">
+            Este es un proyecto desarrollado exclusivamente con fines educativos.
+          </p>
+        </div>
       </footer>
     </div>
   );
