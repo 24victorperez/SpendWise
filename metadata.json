@@ -1,0 +1,5 @@
+{
+  "name": "SpendWise",
+  "description": "A personal expense manager to track and categorize your daily spending.",
+  "requestFramePermissions": []
+}
