@@ -18,6 +18,15 @@ import { motion, AnimatePresence } from 'motion/react';
 
 type Category = 'Comida' | 'Transporte' | 'Hogar' | 'Ocio' | 'Otros' | 'Ropa' | 'Productividad';
 
+type Currency = 'MXN' | 'USD' | 'EUR' | 'GBP';
+
+const CURRENCY_SYMBOLS: Record<Currency, string> = {
+  MXN: '$',
+  USD: '$',
+  EUR: '€',
+  GBP: '£',
+};
+
 interface Expense {
   id: string;
   name: string;
@@ -55,6 +64,7 @@ export default function App() {
   const [category, setCategory] = useState<Category>('Comida');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [darkMode, setDarkMode] = useState(false);
+  const [currency, setCurrency] = useState<Currency>('USD');
 
   // Load from localStorage
   useEffect(() => {
@@ -65,6 +75,11 @@ export default function App() {
       } catch (e) {
         console.error('Failed to parse expenses', e);
       }
+    }
+
+    const savedCurrency = localStorage.getItem('spendwise_currency') as Currency;
+    if (savedCurrency && ['MXN', 'USD', 'EUR', 'GBP'].includes(savedCurrency)) {
+      setCurrency(savedCurrency);
     }
 
     const savedTheme = localStorage.getItem('spendwise_theme');
@@ -93,6 +108,11 @@ export default function App() {
       document.documentElement.classList.remove('dark');
     }
   }, [darkMode]);
+
+  // Save currency to localStorage
+  useEffect(() => {
+    localStorage.setItem('spendwise_currency', currency);
+  }, [currency]);
 
   const totalSpent = useMemo(() => {
     return expenses.reduce((sum, exp) => sum + exp.amount, 0);
@@ -138,9 +158,16 @@ export default function App() {
   };
 
   const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat('es-MX', {
+    const locales: Record<Currency, string> = {
+      MXN: 'es-MX',
+      USD: 'en-US',
+      EUR: 'de-DE',
+      GBP: 'en-GB',
+    };
+    
+    return new Intl.NumberFormat(locales[currency], {
       style: 'currency',
-      currency: 'USD',
+      currency: currency,
     }).format(val);
   };
 
@@ -157,6 +184,20 @@ export default function App() {
           </div>
 
           <div className="flex items-center space-x-4">
+            <div className="relative group">
+              <select
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value as Currency)}
+                className="appearance-none bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 pl-4 pr-10 py-3 rounded-2xl font-bold text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700"
+              >
+                <option value="USD">USD ($)</option>
+                <option value="MXN">MXN ($)</option>
+                <option value="EUR">EUR (€)</option>
+                <option value="GBP">GBP (£)</option>
+              </select>
+              <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
+            </div>
+
             <button
               onClick={() => setDarkMode(!darkMode)}
               className="p-3 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all transform active:scale-95"
@@ -206,9 +247,9 @@ export default function App() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Monto ($)</label>
+                    <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">Monto ({CURRENCY_SYMBOLS[currency]})</label>
                     <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium">$</span>
+                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium">{CURRENCY_SYMBOLS[currency]}</span>
                       <input 
                         type="number" 
                         step="0.01"
