@@ -16,7 +16,7 @@ import { motion, AnimatePresence } from 'motion/react';
 
 // --- Types ---
 
-type Category = 'Comida' | 'Transporte' | 'Hogar' | 'Ocio' | 'Otros';
+type Category = 'Comida' | 'Transporte' | 'Hogar' | 'Ocio' | 'Otros' | 'Ropa' | 'Productividad';
 
 interface Expense {
   id: string;
@@ -32,6 +32,8 @@ const CATEGORY_COLORS: Record<Category, string> = {
   Hogar: 'bg-green-500',
   Ocio: 'bg-purple-500',
   Otros: 'bg-slate-500',
+  Ropa: 'bg-pink-500',
+  Productividad: 'bg-indigo-500',
 };
 
 const CATEGORY_LIGHT_COLORS: Record<Category, string> = {
@@ -40,6 +42,8 @@ const CATEGORY_LIGHT_COLORS: Record<Category, string> = {
   Hogar: 'bg-green-50 text-green-600 dark:bg-green-500/10 dark:text-green-400',
   Ocio: 'bg-purple-50 text-purple-600 dark:bg-purple-500/10 dark:text-purple-400',
   Otros: 'bg-slate-50 text-slate-600 dark:bg-slate-500/10 dark:text-slate-400',
+  Ropa: 'bg-pink-50 text-pink-600 dark:bg-pink-500/10 dark:text-pink-400',
+  Productividad: 'bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400',
 };
 
 // --- Main App Component ---
@@ -101,6 +105,8 @@ export default function App() {
       Hogar: 0,
       Ocio: 0,
       Otros: 0,
+      Ropa: 0,
+      Productividad: 0,
     };
     expenses.forEach((exp) => {
       totals[exp.category] += exp.amount;
@@ -227,6 +233,8 @@ export default function App() {
                         <option value="Transporte">Transporte</option>
                         <option value="Hogar">Hogar</option>
                         <option value="Ocio">Ocio</option>
+                        <option value="Ropa">Ropa</option>
+                        <option value="Productividad">Productividad</option>
                         <option value="Otros">Otros</option>
                       </select>
                       <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 pointer-events-none" />
@@ -277,7 +285,7 @@ export default function App() {
                     <p className="text-sm">Añade un gasto para ver el desglose por categoría.</p>
                   </div>
                 ) : (
-                  Object.entries(categoryTotals).map(([cat, amount]) => {
+                  (Object.entries(categoryTotals) as [Category, number][]).map(([cat, amount]) => {
                     const percentage = totalSpent > 0 ? (amount / totalSpent) * 100 : 0;
                     if (amount === 0) return null;
                     
@@ -285,7 +293,7 @@ export default function App() {
                       <div key={cat} className="space-y-3">
                         <div className="flex justify-between items-end">
                           <div className="flex items-center space-x-2">
-                            <div className={`w-3 h-3 rounded-full ${CATEGORY_COLORS[cat as Category]}`} />
+                            <div className={`w-3 h-3 rounded-full ${CATEGORY_COLORS[cat]}`} />
                             <span className="font-bold text-slate-700 dark:text-slate-300">{cat}</span>
                           </div>
                           <div className="text-right">
@@ -298,7 +306,7 @@ export default function App() {
                             initial={{ width: 0 }}
                             animate={{ width: `${percentage}%` }}
                             transition={{ duration: 1, ease: "easeOut" }}
-                            className={`${CATEGORY_COLORS[cat as Category]} h-full rounded-full`}
+                            className={`${CATEGORY_COLORS[cat]} h-full rounded-full`}
                           />
                         </div>
                       </div>
